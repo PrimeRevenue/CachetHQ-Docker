@@ -20,5 +20,16 @@ services:
       - DB_DATABASE=postgres
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
+      - CACHE_DRIVER="apc"
+      - SESSION_DRIVER="apc"
+      - QUEUE_DRIVER="sync"
+      - MAIL_DRIVER="smtp"
+      - MAIL_HOST="smtp.office365.com"
+      - MAIL_PORT="587"
+      - MAIL_USERNAME="ishin"
+      - MAIL_PASSWORD="bob"
+      - MAIL_ADDRESS="smtprelay@primerevenue.com"
+      - MAIL_NAME="Prime Revenue Status Page"
+      - MAIL_ENCRYPTION=tls
     depends_on:
       - postgres
