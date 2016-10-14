@@ -76,7 +76,7 @@ RUN wget https://github.com/PrimeRevenue/Cachet/archive/${cachet_ver}.tar.gz && 
     php composer.phar install --no-dev -o && \
     rm -rf bootstrap/cache/*
 
-#COPY conf/.env.docker /var/www/html/.env
+COPY conf/.env.docker /var/www/html/.env
 
 VOLUME /var/www
 EXPOSE 80
