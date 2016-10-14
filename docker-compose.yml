@@ -19,6 +19,13 @@ services:
       - DB_HOST=postgres
       - DB_DATABASE=postgres
       - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
-    depends_on:
-      - postgres
+      - DB_PASSWORD=
+      - QUEUE_DRIVER=sync
+      - MAIL_DRIVER=smtp
+      - MAIL_HOST=smtp.office365.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=smtprelay@primerevenue.com
+      - MAIL_PASSWORD=
+      - MAIL_ADDRESS=smtprelay@primerevenue.com
+      - MAIL_NAME=Prime Revenue Status Page
+      - MAIL_ENCRYPTION=tls
