@@ -22,5 +22,3 @@ services:
       - DB_PASSWORD=postgres
     depends_on:
       - postgres
-    volumes:
-      - /etc/cachet/.env:/var/www/html/.env  
