@@ -31,7 +31,7 @@ check_database_connection() {
 initialize_system() {
   APP_ENV=${APP_ENV:-development}
   APP_DEBUG=${APP_DEBUG:-true}
-  APP_URL=${APP_URL:-http://localhost}
+  APP_URL=${APP_URL:-http://status.primerevenue.com}
   APP_KEY=${APP_KEY:-SECRET}
 
   DB_DRIVER=${DB_DRIVER:-pgsql}
