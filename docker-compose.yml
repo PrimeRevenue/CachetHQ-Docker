@@ -29,5 +29,6 @@ services:
       - MAIL_ADDRESS=smtprelay@primerevenue.com
       - MAIL_NAME=Prime Revenue Status Page
       - MAIL_ENCRYPTION=tls
+      - APP_ENV=production
     depends_on:
         - postgres    
