@@ -13,7 +13,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - /etc/nginx/conf.d/:/etc/nginx/conf.d
+      - /etc/ssl/:/etc/ssl/
     links:
       - postgres:postgres
     environment:
