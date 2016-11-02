@@ -79,7 +79,7 @@ RUN wget https://github.com/PrimeRevenue/Cachet/archive/${cachet_ver}.tar.gz && 
 COPY conf/.env.docker /var/www/html/.env
 
 VOLUME /var/www
-EXPOSE 80
+EXPOSE 80 443
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["start"]
