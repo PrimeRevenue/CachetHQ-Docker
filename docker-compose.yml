@@ -25,11 +25,11 @@ services:
       - DB_PASSWORD=
       - QUEUE_DRIVER=sync
       - MAIL_DRIVER=smtp
-      - MAIL_HOST=smtp.office365.com
+      - MAIL_HOST=smtp.sendgrid.net
       - MAIL_PORT=587
-      - MAIL_USERNAME=smtprelay@primerevenue.com
+      - MAIL_USERNAME=prstatus
       - MAIL_PASSWORD=
-      - MAIL_ADDRESS=smtprelay@primerevenue.com
+      - MAIL_ADDRESS=status@primerevenue.com
       - MAIL_NAME=Prime Revenue Status Page
       - MAIL_ENCRYPTION=tls
       - APP_ENV=production
