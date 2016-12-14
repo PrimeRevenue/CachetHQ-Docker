@@ -16,6 +16,8 @@ services:
       - 80:80
       - 443:443
     volumes:
+      # we need to be careful with this mapping. /etc/ssl is where Debian / Ubuntu keeps it's CACerts so this works because it inherits them from the host system.
+      # - /home/deploy/ssl:/etc/nginx/ssl with the appropriate nginx conf modifications is probably safer.
       - /etc/ssl/:/etc/ssl/
     links:
       - postgres:postgres
