@@ -1,5 +1,5 @@
 version: "2"
-
+# ansible overrides passwords and sets empty values on deploy
 services:
   postgres:
     image: postgres:9.5
@@ -17,8 +17,6 @@ services:
       - 80:80
       - 443:443
     volumes:
-      # we need to be careful with this mapping. /etc/ssl is where Debian / Ubuntu keeps it's CACerts so this works because it inherits them from the host system.
-      # - /home/deploy/ssl:/etc/nginx/ssl with the appropriate nginx conf modifications is probably safer.
       - /home/deploy/certs/:/etc/nginx/ssl/
     links:
       - postgres:postgres
