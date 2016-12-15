@@ -19,7 +19,7 @@ services:
     volumes:
       # we need to be careful with this mapping. /etc/ssl is where Debian / Ubuntu keeps it's CACerts so this works because it inherits them from the host system.
       # - /home/deploy/ssl:/etc/nginx/ssl with the appropriate nginx conf modifications is probably safer.
-      - /etc/ssl/:/etc/ssl/
+      - /home/deploy/certs/:/etc/nginx/ssl/
     links:
       - postgres:postgres
     environment:
@@ -29,14 +29,17 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=
       - QUEUE_DRIVER=database
-      - MAIL_DRIVER=smtp
+      - MAIL_DRIVER=sendgrid
+      # sendgrid mail_driver uses the API
+      - SENDGRID_API_KEY=
       - MAIL_HOST=smtp.sendgrid.net
       - MAIL_PORT=587
       - MAIL_USERNAME=prstatus
       - MAIL_PASSWORD=
       - MAIL_ADDRESS=status@primerevenue.com
-      - MAIL_NAME=Prime Revenue Status Page
+      - MAIL_NAME=PrimeRevenue Status Page
       - MAIL_ENCRYPTION=tls
       - APP_ENV=production
+
     depends_on:
         - postgres    
