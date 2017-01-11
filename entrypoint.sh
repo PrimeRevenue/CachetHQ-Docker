@@ -28,6 +28,24 @@ check_database_connection() {
   echo
 }
 
+CACHETMONITOR_PATH="/var/www/html/thirdparty/cachet-monitor"
+initialize_cachetmonitor() {
+  echo "Initializing CachetMonitor"
+  if [ ! -d ${CACHETMONITOR_PATH} ]; then
+    mkdir -p ${CACHETMONITOR_PATH}
+  fi
+
+  echo "Downloading CachetMonitor"
+  sudo wget https://github.com/CastawayLabs/cachet-monitor/releases/download/v2.0/cachet-monitor_linux_amd64 -O${CACHETMONITOR_PATH}/cachet-monitor
+  sudo chmod +x ${CACHETMONITOR_PATH}/cachet-monitor
+  if [ ! -f /etc/cachet-monitor/cachet-monitor.config.json ]; then
+    echo "Adding default configuration"
+    sudo mv /etc/cachet-monitor/cachet-monitor.default.conf.json /etc/cachet-monitor/cachet-monitor.config.json
+    sudo sed 's,{{APP_URL}},'"${APP_URL}"',g' -i /etc/cachet-monitor/cachet-monitor.config.json
+    sudo sed 's,{{APP_KEY}},'${APP_KEY}',g' -i /etc/cachet-monitor/cachet-monitor.config.json
+  fi
+}
+
 initialize_system() {
   APP_ENV=${APP_ENV:-development}
   APP_DEBUG=${APP_DEBUG:-true}
@@ -94,6 +112,7 @@ initialize_system() {
   rm -rf bootstrap/cache/*
   chmod -R 777 storage
   touch /var/www/.cachet-installed
+  initialize_cachetmonitor
   start_system
 }
 
@@ -101,8 +120,13 @@ start_system() {
   check_database_connection
   [ -f "/var/www/.cachet-installed" ] && echo "Starting Cachet" || initialize_system
   php artisan config:cache
+
+  echo "Starting CachetMonitor"
+  ${CACHETMONITOR_PATH}/cachet-monitor -c /etc/cachet-monitor/cachet-monitor.config.json > ${CACHETMONITOR_PATH}/cachet-monitor.log &
+
   sudo /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 }
+
 
 case ${1} in
   init|start)
