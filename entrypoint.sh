@@ -41,8 +41,8 @@ initialize_cachetmonitor() {
   if [ ! -f /etc/cachet-monitor/cachet-monitor.config.json ]; then
     echo "Adding default configuration"
     sudo mv /etc/cachet-monitor/cachet-monitor.default.conf.json /etc/cachet-monitor/cachet-monitor.config.json
-    sudo sed 's,{{APP_URL}},'"${APP_URL}"',g' -i /etc/cachet-monitor/cachet-monitor.config.json
-    sudo sed 's,{{APP_KEY}},'${APP_KEY}',g' -i /etc/cachet-monitor/cachet-monitor.config.json
+    sudo sed 's,{{APP_URL}},'http://127.0.0.1',g' -i /etc/cachet-monitor/cachet-monitor.config.json
+    sudo sed 's,{{APP_KEY}},'"${APP_KEY}"',g' -i /etc/cachet-monitor/cachet-monitor.config.json
   fi
 }
 
