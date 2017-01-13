@@ -116,20 +116,28 @@ initialize_system() {
   start_system
 }
 
+start_cachetmonitor(){
+  CACHETMONITOR_CURRENTPID=`ps ax | grep ${CACHETMONITOR_PATH}/cachet-monitor | grep -v grep | head -1 | awk -F' ' '{ print $1 }'`
+  if [ "x${CACHETMONITOR_CURRENTPID}" != "x" ]; then
+    echo "Killing CachetMonitor"
+    kill -9 ${CACHETMONITOR_CURRENTPID}
+  fi
+  echo "Starting CachetMonitor"
+  ${CACHETMONITOR_PATH}/cachet-monitor -log ${CACHETMONITOR_PATH}/cachet-monitor.log -c /etc/cachet-monitor/cachet-monitor.config.json > ${CACHETMONITOR_PATH}/cachet-monitor.log &
+}
+
 start_system() {
   check_database_connection
   [ -f "/var/www/.cachet-installed" ] && echo "Starting Cachet" || initialize_system
   php artisan config:cache
 
-  echo "Starting CachetMonitor"
-  ${CACHETMONITOR_PATH}/cachet-monitor -c /etc/cachet-monitor/cachet-monitor.config.json > ${CACHETMONITOR_PATH}/cachet-monitor.log &
+  start_cachetmonitor
 
   sudo /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 }
 
-
 case ${1} in
-  init|start)
+  init|start|cm-reload)
 
     case ${1} in
       start)
@@ -138,12 +146,16 @@ case ${1} in
       init)
         initialize_system
         ;;
+      cm-reload)
+        start_cachetmonitor
+        ;;
     esac
     ;;
   help)
     echo "Available options:"
     echo " start        - Starts the Cachet server (default)"
     echo " init         - Initialize the Cachet server (e.g. create databases, compile assets)."
+    echo " cm-reload         - Initialize the Cachet server (e.g. create databases, compile assets)."
     echo " help         - Displays the help"
     echo " [command]        - Execute the specified command, eg. bash."
     ;;
