@@ -28,6 +28,24 @@ check_database_connection() {
   echo
 }
 
+CACHETMONITOR_PATH="/var/www/html/thirdparty/cachet-monitor"
+initialize_cachetmonitor() {
+  echo "Initializing CachetMonitor"
+  if [ ! -d ${CACHETMONITOR_PATH} ]; then
+    mkdir -p ${CACHETMONITOR_PATH}
+  fi
+
+  echo "Downloading CachetMonitor"
+  sudo wget https://github.com/CastawayLabs/cachet-monitor/releases/download/v2.0/cachet-monitor_linux_amd64 -O${CACHETMONITOR_PATH}/cachet-monitor
+  sudo chmod +x ${CACHETMONITOR_PATH}/cachet-monitor
+  if [ ! -f /etc/cachet-monitor/cachet-monitor.config.json ]; then
+    echo "Adding default configuration"
+    sudo mv /etc/cachet-monitor/cachet-monitor.default.conf.json /etc/cachet-monitor/cachet-monitor.config.json
+    sudo sed 's,{{APP_URL}},'http://127.0.0.1',g' -i /etc/cachet-monitor/cachet-monitor.config.json
+    sudo sed 's,{{APP_KEY}},'"${APP_KEY}"',g' -i /etc/cachet-monitor/cachet-monitor.config.json
+  fi
+}
+
 initialize_system() {
   APP_ENV=${APP_ENV:-development}
   APP_DEBUG=${APP_DEBUG:-true}
@@ -94,18 +112,32 @@ initialize_system() {
   rm -rf bootstrap/cache/*
   chmod -R 777 storage
   touch /var/www/.cachet-installed
+  initialize_cachetmonitor
   start_system
+}
+
+start_cachetmonitor(){
+  CACHETMONITOR_CURRENTPID=`ps ax | grep ${CACHETMONITOR_PATH}/cachet-monitor | grep -v grep | head -1 | awk -F' ' '{ print $1 }'`
+  if [ "x${CACHETMONITOR_CURRENTPID}" != "x" ]; then
+    echo "Killing CachetMonitor"
+    kill -9 ${CACHETMONITOR_CURRENTPID}
+  fi
+  echo "Starting CachetMonitor"
+  ${CACHETMONITOR_PATH}/cachet-monitor -log ${CACHETMONITOR_PATH}/cachet-monitor.log -c /etc/cachet-monitor/cachet-monitor.config.json > ${CACHETMONITOR_PATH}/cachet-monitor.log &
 }
 
 start_system() {
   check_database_connection
   [ -f "/var/www/.cachet-installed" ] && echo "Starting Cachet" || initialize_system
   php artisan config:cache
+
+  start_cachetmonitor
+
   sudo /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 }
 
 case ${1} in
-  init|start)
+  init|start|cm-reload)
 
     case ${1} in
       start)
@@ -114,12 +146,16 @@ case ${1} in
       init)
         initialize_system
         ;;
+      cm-reload)
+        start_cachetmonitor
+        ;;
     esac
     ;;
   help)
     echo "Available options:"
     echo " start        - Starts the Cachet server (default)"
     echo " init         - Initialize the Cachet server (e.g. create databases, compile assets)."
+    echo " cm-reload         - Initialize the Cachet server (e.g. create databases, compile assets)."
     echo " help         - Displays the help"
     echo " [command]        - Execute the specified command, eg. bash."
     ;;

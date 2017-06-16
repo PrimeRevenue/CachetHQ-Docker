@@ -78,8 +78,13 @@ RUN wget https://github.com/PrimeRevenue/Cachet/archive/${cachet_ver}.tar.gz && 
 
 COPY conf/.env.docker /var/www/html/.env
 
+RUN sudo mkdir -p /etc/cachet-monitor && \
+    sudo chown -R www-data /etc/cachet-monitor
+COPY conf/cachet-monitor.default.conf.json /etc/cachet-monitor
+
 VOLUME /var/www
 EXPOSE 80 443
+VOLUME /etc/cachet-monitor
 
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["start"]
